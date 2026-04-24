@@ -1,13 +1,15 @@
 services:
   cv-rag:
     build:
-      context: ./cv-rag
+      context: .
       dockerfile: Dockerfile
     env_file:
-      - ./cv-rag/.env
+      - ./.env
     ports:
       - "8000:8000"
     restart: unless-stopped
+    volumes:
+      - hf-cache:/home/app/.cache/huggingface
     networks:
       - cv-rag-network
     environment:
@@ -18,8 +20,11 @@ services:
       interval: 10s
       timeout: 5s
       retries: 3
-      start_period: 10s
+      start_period: 120s
 
 networks:
   cv-rag-network:
     driver: bridge
+
+volumes:
+  hf-cache:

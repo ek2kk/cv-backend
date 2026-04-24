@@ -19,7 +19,7 @@ MODELS = [
 
 
 def call_llm(messages: list[dict], max_tokens: int = 500) -> str:
-    last_error = None
+    last_error: Exception | None = None
 
     for model in MODELS:
         for attempt in range(2):
@@ -30,10 +30,17 @@ def call_llm(messages: list[dict], max_tokens: int = 500) -> str:
                     temperature=0.2,
                     max_tokens=max_tokens,
                 )
-                return response.choices[0].message.content
+                content = response.choices[0].message.content
+                if content:
+                    return content
+
+                last_error = RuntimeError(f"Model {model} returned an empty answer")
 
             except (RateLimitError, APIError) as e:
                 last_error = e
                 time.sleep(1.2 * (attempt + 1))
 
-    raise last_error
+    if last_error:
+        raise last_error
+
+    raise RuntimeError("No LLM models were configured")

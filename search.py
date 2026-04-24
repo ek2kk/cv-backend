@@ -6,11 +6,10 @@ import numpy as np
 from sentence_transformers import SentenceTransformer
 
 MODEL_NAME = "intfloat/multilingual-e5-small"
+model = SentenceTransformer(MODEL_NAME)
 
 
 def build_index(md_dir: str, index_path="resume.index", meta_path="resume_meta.json"):
-    model = SentenceTransformer(MODEL_NAME)
-
     docs = []
     metadata = []
 
@@ -59,8 +58,6 @@ def build_index(md_dir: str, index_path="resume.index", meta_path="resume_meta.j
 
 
 def search(query: str, k=3, index_path="resume.index", meta_path="resume_meta.json"):
-    model = SentenceTransformer(MODEL_NAME)
-
     index = faiss.read_index(index_path)
 
     with open(meta_path, "r", encoding="utf-8") as f:
