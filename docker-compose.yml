@@ -1,0 +1,25 @@
+services:
+  cv-rag:
+    build:
+      context: ./cv-rag
+      dockerfile: Dockerfile
+    env_file:
+      - ./cv-rag/.env
+    ports:
+      - "8000:8000"
+    restart: unless-stopped
+    networks:
+      - cv-rag-network
+    environment:
+      - PYTHONUNBUFFERED=1
+      - PYTHONDONTWRITEBYTECODE=1
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "http://localhost:8000/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+
+networks:
+  cv-rag-network:
+    driver: bridge
