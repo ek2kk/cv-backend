@@ -5,7 +5,7 @@ import faiss
 import numpy as np
 from sentence_transformers import SentenceTransformer
 
-MODEL_NAME = "BAAI/bge-m3"
+MODEL_NAME = "intfloat/multilingual-e5-small"
 
 
 def build_index(md_dir: str, index_path="resume.index", meta_path="resume_meta.json"):
@@ -36,8 +36,10 @@ def build_index(md_dir: str, index_path="resume.index", meta_path="resume_meta.j
             }
         )
 
+    passages = [f"passage: {doc}" for doc in docs]
+
     embeddings = model.encode(
-        docs,
+        passages,
         normalize_embeddings=True,
         convert_to_numpy=True,
     ).astype("float32")
@@ -65,7 +67,7 @@ def search(query: str, k=3, index_path="resume.index", meta_path="resume_meta.js
         metadata = json.load(f)
 
     query_emb = model.encode(
-        [query],
+        [f"query: {query}"],
         normalize_embeddings=True,
         convert_to_numpy=True,
     ).astype("float32")
