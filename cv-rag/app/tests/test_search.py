@@ -4,7 +4,13 @@ from pathlib import Path
 import faiss
 
 from app.models import SearchResult
-from app.services.search import RAW_DATA_DIR, _index_needs_rebuild, _load_index, build_index, search
+from app.services.search import (
+    RAW_DATA_DIR,
+    _index_needs_rebuild,
+    _load_index,
+    build_index,
+    search,
+)
 
 
 def test_search_returns_indexed_articles(tmp_path: Path) -> None:
@@ -17,6 +23,17 @@ def test_search_returns_indexed_articles(tmp_path: Path) -> None:
     assert results
     assert isinstance(results[0], SearchResult)
     assert results[0].score > 0
+
+
+def test_search_finds_current_workplace_for_short_question(tmp_path: Path) -> None:
+    index_path = tmp_path / "resume.index"
+    meta_path = tmp_path / "resume_meta.json"
+
+    build_index(RAW_DATA_DIR, index_path=index_path, meta_path=meta_path)
+    results = search("Где он работает?", k=3, index_path=index_path, meta_path=meta_path)
+
+    assert results[0].file == "experience.md"
+    assert "Mamba" in results[0].text
 
 
 def test_load_index_accepts_legacy_metadata_without_score(tmp_path: Path) -> None:

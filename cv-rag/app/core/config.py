@@ -21,7 +21,7 @@ class EmbeddingSettings(BaseSettings):
 
 
 class RagSettings(BaseSettings):
-    min_score: float = Field(default=0.83, ge=0, le=1)
+    min_score: float = Field(default=0.75, ge=0, le=1)
     sources_count: int = Field(default=3, ge=1, le=10)
 
 

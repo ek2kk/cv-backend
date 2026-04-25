@@ -2,6 +2,10 @@
 
 ## Mamba | ML/DL-разработчик, аналитик данных, GenAI-инженер 12.2024 - н.в.
 
+Текущее место работы: Mamba.
+
+Где работает сейчас: Mamba.
+
 Стек: Python, PyTorch, FastAPI, vLLM, SQL, Metabase, Docker, uv, ClickHouse,
 Kafka, Grafana, Prometheus, Airflow, Alertmanager, nginx.
 
