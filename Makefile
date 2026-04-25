@@ -1,4 +1,6 @@
-UV=uv
+PROJECT_DIR := cv-rag
+UV := cd $(PROJECT_DIR) && uv
+
 .PHONY: install run test lint fmt typecheck check build up down logs
 
 install:
@@ -7,7 +9,7 @@ install:
 
 run:
 	$(info "Running API locally with the canonical command")
-	$(UV) run uvicorn main:app --host 0.0.0.0 --port 8000 --reload
+	$(UV) run uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
 
 test:
 	$(info "Running smoke tests")
