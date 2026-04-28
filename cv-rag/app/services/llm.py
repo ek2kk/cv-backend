@@ -20,7 +20,7 @@ MODELS = [
 ]
 
 
-def call_llm(messages: list[ChatCompletionMessageParam], max_tokens: int = 500) -> str:
+def call_llm(messages: list[ChatCompletionMessageParam], max_tokens: int = 900) -> str:
     if not settings.openrouter.api_key:
         raise LlmConfigError("OpenRouter API key is not configured")
 
@@ -35,12 +35,30 @@ def call_llm(messages: list[ChatCompletionMessageParam], max_tokens: int = 500) 
                     temperature=0.2,
                     max_tokens=max_tokens,
                 )
-                content = response.choices[0].message.content
-                if content:
-                    logger.info("LLM request succeeded", extra={"extra_data": {"model": model}})
+                choice = response.choices[0]
+                content = choice.message.content
+                finish_reason = choice.finish_reason
+
+                if content and finish_reason == "stop":
+                    logger.info(
+                        "LLM request succeeded",
+                        extra={"extra_data": {"model": model, "finish_reason": finish_reason}},
+                    )
                     return content
 
-                last_error = LlmResponseError(f"Model {model} returned an empty answer")
+                last_error = LlmResponseError(
+                    f"Model {model} returned an incomplete answer: finish_reason={finish_reason}"
+                )
+                logger.warning(
+                    "LLM request returned incomplete answer",
+                    extra={
+                        "extra_data": {
+                            "model": model,
+                            "finish_reason": finish_reason,
+                            "content_chars": len(content or ""),
+                        }
+                    },
+                )
 
             except (RateLimitError, APIError, APIConnectionError, APITimeoutError) as e:
                 last_error = e
